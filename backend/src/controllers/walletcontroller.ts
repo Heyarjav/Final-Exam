@@ -14,15 +14,17 @@ const walletOnrampSchema = z.object({
 
 let notificationId = 1;
 
-function createWalletNotification(userId: number, email: string, amount: number) {
+function createWalletNotification(email: string, amount: number) {
   return {
     id: notificationId,
-    user: userId,
-    amount: amount,
-    email: email,
+    to: email,
     template: "wallet-onramp-success",
     service: "EMAIL" as const,
     priority: 0,
+    variables: {
+      username: email,
+      amount: amount
+    }
   };
 }
 
@@ -51,7 +53,7 @@ export async function walletOnramp(req: AuthRequest, res: Response) {
 
     //TODO: Send notification to user
     // pushing the notification in a queue
-    const notification = createWalletNotification(req.user.id, req.user.email, body.amount);
+    const notification = createWalletNotification(req.user.email, body.amount);
     await client.lPush("Queue-1", JSON.stringify(notification));
 
     res.status(201).json({

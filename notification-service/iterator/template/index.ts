@@ -1,6 +1,4 @@
 //TODO: HELPERS FOR RENDERING TEMPLATES
-import { BackendListner } from "./BackendLitsener";
-BackendListner();
 
 export type TemplateName =
   | "signup-success"

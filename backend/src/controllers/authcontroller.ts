@@ -21,14 +21,16 @@ const loginSchema = z.object({
 
 let notificationId = 1;
 
-function createSignupNotification(userId: number, email: string) {
+function createSignupNotification(email: string) {
   return {
     id: notificationId,
-    user: userId,
-    email: email,
+    to: email,
     template: "signup-success",
     service: "EMAIL" as const,
     priority: 1,
+    variables: {
+      username: email,
+    },
   };
 }
 
@@ -49,7 +51,7 @@ export async function signup(req: Request, res: Response) {
     });
 
     //TODO: Send notification to user 
-    const notification = createSignupNotification(user.id, user.email);
+    const notification = createSignupNotification(user.email);
     await client.lPush("Queue-1", JSON.stringify(notification));
 
     res.status(201).json({
